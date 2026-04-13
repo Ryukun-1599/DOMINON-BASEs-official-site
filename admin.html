@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>DOMINIO BASEs · 管理コンソール</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@1,700;1,800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./css/theme.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header__inner">
+        <a class="brand" href="./index.html">
+          <img
+            class="brand__logo"
+            src="https://cdn.discordapp.com/attachments/1446480954289033239/1491786313249329212/5b6db380172d3f13038f6f204f322936.png?ex=69dd9305&is=69dc4185&hm=302f11bd8a8b465364c3fb472e7037131d9f0763a110512756702bba6e349b18&"
+            width="44"
+            height="44"
+            alt=""
+          />
+          <span class="brand__text">
+            <span class="brand__name">DOMINIO BASEs</span>
+            <span class="brand__tag">Admin Console</span>
+          </span>
+        </a>
+        <nav class="nav" aria-label="主要ナビゲーション">
+          <a href="./index.html">拠点ストア</a>
+          <a class="is-active" href="./admin.html">管理コンソール</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="shell">
+      <section class="hero" style="margin-bottom: 1rem">
+        <div class="hero__grid">
+          <div>
+            <h1>管理コンソール</h1>
+            <p class="muted" style="margin: 0">
+              商品データとサイト方針はブラウザの <strong>localStorage</strong> に保存されます。別端末へ反映する場合は JSON
+              エクスポート／インポートを使ってください。
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="js-gate">
+        <div class="panel__head">
+          <h2 id="js-gate-title">ロック解除</h2>
+        </div>
+        <p class="muted" id="js-gate-help"></p>
+        <div class="field">
+          <label for="js-pin">管理者 PIN</label>
+          <input id="js-pin" class="input" type="password" autocomplete="current-password" />
+        </div>
+        <div class="btn-row">
+          <button type="button" class="btn" id="js-unlock">ロック解除</button>
+        </div>
+      </section>
+
+      <section class="panel hidden" id="js-setup">
+        <div class="panel__head">
+          <h2>初期セットアップ</h2>
+        </div>
+        <p class="muted">初回のみ: PIN・Webhook・Discord OAuth Client ID を登録します。</p>
+        <div class="field">
+          <label for="js-init-pin">新しい管理者 PIN</label>
+          <input id="js-init-pin" class="input" type="password" autocomplete="new-password" />
+        </div>
+        <div class="field">
+          <label for="js-init-webhook">購入通知 Webhook URL</label>
+          <input id="js-init-webhook" class="input" placeholder="https://discord.com/api/webhooks/..." />
+        </div>
+        <div class="field">
+          <label for="js-init-client">Discord OAuth Client ID（任意）</label>
+          <input id="js-init-client" class="input" placeholder="数字のみ" />
+        </div>
+        <div class="btn-row">
+          <button type="button" class="btn" id="js-init-save">初期設定を保存</button>
+        </div>
+      </section>
+
+      <div id="js-console" class="hidden">
+        <section class="panel">
+          <div class="panel__head">
+            <h2>サイト方針</h2>
+            <button type="button" class="btn btn--ghost" id="js-logout">ロック（ログアウト）</button>
+          </div>
+          <div class="field">
+            <label for="js-webhook">購入通知 Webhook URL</label>
+            <input id="js-webhook" class="input" />
+          </div>
+          <div class="field">
+            <label for="js-client">Discord OAuth Client ID</label>
+            <input id="js-client" class="input" />
+          </div>
+          <div class="field">
+            <label for="js-tagline">ストアのサブタイトル</label>
+            <input id="js-tagline" class="input" />
+          </div>
+          <div class="btn-row" role="group" aria-label="Discord 方針">
+            <button type="button" class="btn" id="js-toggle-req">Discord 必須: 切替</button>
+            <button type="button" class="btn btn--ghost" id="js-toggle-strict">OAuth のみ必須: 切替</button>
+            <span class="pill" id="js-pill-req">Discord必須: OFF</span>
+            <span class="pill" id="js-pill-strict">OAuthのみ: OFF</span>
+          </div>
+          <p class="muted">
+            <strong>OAuth のみ必須</strong> を ON にすると、購入時に Discord 手入力を受け付けません（ブラウザの CORS 状況によっては厳しすぎる場合があります）。
+          </p>
+          <div class="btn-row">
+            <button type="button" class="btn" id="js-save-settings">方針を保存</button>
+            <button type="button" class="btn btn--ghost" id="js-test-webhook">Webhook テスト送信</button>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel__head">
+            <h2>PIN の変更</h2>
+          </div>
+          <div class="field">
+            <label for="js-old-pin">現在の PIN</label>
+            <input id="js-old-pin" class="input" type="password" />
+          </div>
+          <div class="field">
+            <label for="js-new-pin">新しい PIN</label>
+            <input id="js-new-pin" class="input" type="password" />
+          </div>
+          <div class="btn-row">
+            <button type="button" class="btn" id="js-change-pin">PIN を更新</button>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel__head">
+            <h2>拠点（商品）を追加</h2>
+          </div>
+          <div class="field">
+            <label for="js-p-title">拠点名</label>
+            <input id="js-p-title" class="input" />
+          </div>
+          <div class="field">
+            <label for="js-p-region">区域 / ディメンション</label>
+            <input id="js-p-region" class="input" placeholder="例: Overworld / Nether" />
+          </div>
+          <div class="field">
+            <label for="js-p-coords">座標メモ</label>
+            <input id="js-p-coords" class="input" placeholder="例: 1200 ~ -800" />
+          </div>
+          <div class="field">
+            <label for="js-p-desc">説明</label>
+            <textarea id="js-p-desc" class="textarea" placeholder="防衛、倉庫、近隣状況など"></textarea>
+          </div>
+          <div class="field">
+            <label for="js-p-notes">運営メモ（ストアでは非表示）</label>
+            <input id="js-p-notes" class="input" />
+          </div>
+          <div class="field">
+            <label for="js-p-amount">価格（数値）</label>
+            <input id="js-p-amount" class="input" type="number" min="0" step="any" />
+          </div>
+          <div class="field">
+            <label for="js-p-unit">価格単位（DonutSMP 風）</label>
+            <select id="js-p-unit" class="select">
+              <option>K</option>
+              <option>M</option>
+              <option>B</option>
+              <option>T</option>
+            </select>
+          </div>
+          <div class="btn-row">
+            <button type="button" class="btn" id="js-add-product">拠点を掲載リストに追加</button>
+            <button type="button" class="btn btn--ghost" id="js-clear-product-form">入力欄を空にする</button>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel__head">
+            <h2>掲載一覧</h2>
+            <div class="btn-row">
+              <button type="button" class="btn btn--ghost" id="js-export">JSON エクスポート</button>
+              <label class="btn btn--ghost" style="cursor: pointer">
+                JSON インポート
+                <input id="js-import" type="file" accept="application/json" class="hidden" />
+              </label>
+            </div>
+          </div>
+          <div style="overflow: auto">
+            <table class="table" id="js-table">
+              <thead>
+                <tr>
+                  <th>拠点</th>
+                  <th>価格</th>
+                  <th>公開</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="site-footer__inner">
+        <div><strong>注意</strong>: 静的ホスティングでは Webhook URL と PIN はクライアントに置かれます。信頼できる端末だけで操作してください。</div>
+      </div>
+    </footer>
+
+    <div id="js-toast" class="toast hidden" role="status"></div>
+
+    <script src="./js/core.js"></script>
+    <script src="./js/admin.js"></script>
+  </body>
+</html>

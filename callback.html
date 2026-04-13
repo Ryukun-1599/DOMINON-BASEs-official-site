@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DOMINIO BASEs · Discord 連携</title>
+    <link rel="stylesheet" href="./css/theme.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <div class="panel">
+        <div class="panel__head">
+          <h2>Discord 連携処理中</h2>
+        </div>
+        <p class="muted" id="js-status">トークンを確認しています…</p>
+      </div>
+    </main>
+    <script src="./js/core.js"></script>
+    <script>
+      (function () {
+        const C = window.DominioCore;
+        const statusEl = document.getElementById("js-status");
+        const failReturn = "./index.html?discord=fail";
+
+        function setStatus(t) {
+          if (statusEl) statusEl.textContent = t;
+        }
+
+        const expectedState = sessionStorage.getItem(C.STORAGE.oauthState) || "";
+        const returnTo = sessionStorage.getItem(C.STORAGE.oauthReturn) || "./index.html";
+
+        if (!location.hash || !location.hash.includes("access_token")) {
+          setStatus("Discord からの応答が見つかりませんでした。");
+          setTimeout(() => (location.href = failReturn), 900);
+          return;
+        }
+
+        const params = new URLSearchParams(location.hash.slice(1));
+        const token = params.get("access_token");
+        const state = params.get("state") || "";
+
+        if (!token) {
+          setStatus("アクセストークンがありません。");
+          setTimeout(() => (location.href = failReturn), 900);
+          return;
+        }
+        if (expectedState && state !== expectedState) {
+          setStatus("state が一致しません。もう一度お試しください。");
+          setTimeout(() => (location.href = failReturn), 900);
+          return;
+        }
+
+        fetch("https://discord.com/api/v10/users/@me", {
+          headers: { Authorization: "Bearer " + token },
+        })
+          .then((r) => (r.ok ? r.json() : Promise.reject(new Error("HTTP " + r.status))))
+          .then((u) => {
+            C.setDiscordProfile({
+              id: u.id,
+              username: u.username,
+              global_name: u.global_name || u.username,
+              avatar: u.avatar || null,
+            });
+            sessionStorage.removeItem(C.STORAGE.oauthState);
+            sessionStorage.removeItem(C.STORAGE.oauthReturn);
+            setStatus("連携完了。ストアへ戻ります…");
+            location.replace(returnTo);
+          })
+          .catch(() => {
+            setStatus("@me の取得に失敗しました（CORS / アプリ設定）。手入力に切り替えてください。");
+            setTimeout(() => (location.href = failReturn), 1200);
+          });
+      })();
+    </script>
+  </body>
+</html>

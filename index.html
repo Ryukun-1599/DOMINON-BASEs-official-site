@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="DOMINIO BASEs — DonutSMP 向け拠点ストア（静的サイト）。Minecraft ユーザー名と任意の Discord 連携で購入依頼を送れます。"
+    />
+    <title>DOMINIO BASEs · 拠点ストア</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@1,700;1,800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./css/theme.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header__inner">
+        <a class="brand" href="./index.html">
+          <img
+            id="js-brand-logo"
+            class="brand__logo"
+            src="https://cdn.discordapp.com/attachments/1446480954289033239/1491786313249329212/5b6db380172d3f13038f6f204f322936.png?ex=69dd9305&is=69dc4185&hm=302f11bd8a8b465364c3fb472e7037131d9f0763a110512756702bba6e349b18&"
+            width="44"
+            height="44"
+            alt="DOMINIO BASEs ロゴ"
+          />
+          <span class="brand__text">
+            <span class="brand__name">DOMINIO BASEs</span>
+            <span class="brand__tag">Territory Exchange</span>
+          </span>
+        </a>
+        <nav class="nav" aria-label="主要ナビゲーション">
+          <a class="is-active" href="./index.html">拠点ストア</a>
+          <a href="#flow">取引の流れ</a>
+          <a href="./admin.html">管理コンソール</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="shell">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero__grid">
+          <div>
+            <h1 id="hero-title">拠点リスト · ゲーム内通貨表示</h1>
+            <p>
+              DonutSMP で使われる <strong>K / M / B / T</strong> の感覚に合わせた価格表記です。ここでの購入ボタンは
+              <strong>Discord Webhook への購入依頼通知</strong>であり、ゲーム内の即時決済ではありません。
+            </p>
+          </div>
+          <aside class="hud" aria-label="現在のポリシー">
+            <p class="hud__title">Access policy</p>
+            <p class="muted" id="js-settings-line" style="margin: 0 0 0.75rem"></p>
+            <div class="hud__row" aria-live="polite">
+              <span class="chip chip--warn" id="js-chip-mc">Minecraft: 未登録</span>
+              <span class="chip chip--warn" id="js-chip-dc">Discord: 未使用</span>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="id-title">
+        <div class="panel__head">
+          <h2 id="id-title">身元の登録（購入前に必須）</h2>
+        </div>
+        <p class="muted">
+          <strong>Minecraft ユーザー名</strong>は必須です。<strong>Discord</strong>はサーバ方針に応じて必須にできます（管理画面で切替）。OAuth
+          が使えない場合は、手入力欄に Discord 表示名を入れてください。
+        </p>
+        <div class="field">
+          <label for="js-mc-name">Minecraft ユーザー名（必須）</label>
+          <input
+            id="js-mc-name"
+            class="input"
+            autocomplete="username"
+            maxlength="16"
+            placeholder="例: Notch"
+          />
+        </div>
+        <div class="field" id="js-discord-manual-wrap">
+          <label for="js-discord-manual">Discord 表示名（任意／方針により必須）</label>
+          <input id="js-discord-manual" class="input" maxlength="64" placeholder="例: username または表示名" />
+        </div>
+        <div class="btn-row" role="group" aria-label="身元関連アクション">
+          <button type="button" class="btn" id="js-save-identity">身元情報を保存</button>
+          <button type="button" class="btn btn--ghost" id="js-discord-oauth">Discord で連携（推奨）</button>
+          <button type="button" class="btn btn--ghost" id="js-discord-clear">連携情報を消去</button>
+        </div>
+        <p class="muted" style="margin: 0.75rem 0 0">
+          <kbd>Discord で連携</kbd> は Developer Portal でこのサイトの <code>callback.html</code> を Redirect に追加し、必要なら
+          Implicit フローを有効化してください。
+        </p>
+      </section>
+
+      <section class="panel" aria-labelledby="list-title">
+        <div class="panel__head">
+          <h2 id="list-title">公開中の拠点</h2>
+          <span class="muted">価格は目安（掲載者設定）</span>
+        </div>
+        <div class="grid-cards" id="js-product-grid"></div>
+      </section>
+
+      <section class="panel" id="flow">
+        <div class="panel__head">
+          <h2>取引の流れ（意味のあるボタン設計）</h2>
+        </div>
+        <ol class="muted">
+          <li><strong>身元情報を保存</strong> — 取引連絡に使う Minecraft 名（＋Discord）をこのブラウザに記録します。</li>
+          <li><strong>拠点仕様を確認</strong> — 区域・座標・注意事項を読み、合意できるか判断します。</li>
+          <li>
+            <strong>購入依頼を送る</strong> — 運営の Discord Webhook に「商品 / ユーザー / 日時」形式で通知します（確定ではありません）。
+          </li>
+        </ol>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="site-footer__inner">
+        <div>
+          <strong>DOMINIO BASEs</strong> — Minecraft を題材にしたファン用途の静的ページです。Mojang / Microsoft および
+          DonutSMP 運営とは無関係です。
+        </div>
+        <div>
+          通知に失敗する場合は、ブラウザ設定・Discord アプリ設定（Redirect / OAuth）・Webhook URL を確認してください。
+        </div>
+      </div>
+    </footer>
+
+    <div id="js-modal-backdrop" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+      <div class="modal">
+        <h3 id="js-modal-title">確認</h3>
+        <div id="js-modal-body"></div>
+        <div class="btn-row" style="margin-top: 0.85rem">
+          <button type="button" class="btn btn--ghost" id="js-modal-cancel">閉じる</button>
+          <button type="button" class="btn" id="js-modal-confirm">Webhook に購入依頼を送る</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="js-toast" class="toast hidden" role="status"></div>
+
+    <script src="./js/core.js"></script>
+    <script src="./js/store.js"></script>
+  </body>
+</html>
